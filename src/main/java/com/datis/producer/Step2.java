@@ -20,23 +20,23 @@ import org.apache.kafka.clients.producer.RecordMetadata;
  *
  * @author jeus
  */
-public class Region extends Thread {
+public class Step2 extends Thread {
 
     private final String topic;
     Properties propr = new Properties();
     String[] world = "USA,Afghanistan,Albania,Algeria".split(",");
-    KafkaProducer<Long, String> producer;
+    KafkaProducer<String, Long> producer;
 
-    public Region() {
-        topic = "step1";
+    public Step2() {
+        topic = "step344443";
         propr = new Properties();
         propr.put("bootstrap.servers", "172.17.0.13:9092");
-        propr.put("client.id", "region");
+        propr.put("client.id", "step2");
 //        props.put("batch.size",150);//this for async by size in buffer
 //        props.put("linger.ms", 9000);//this for async by milisecond messages buffered
         propr.put("acks", "1");
-        propr.put("key.serializer", "org.apache.kafka.common.serialization.LongSerializer");
-        propr.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        propr.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        propr.put("value.serializer","org.apache.kafka.common.serialization.LongSerializer");
         producer = new KafkaProducer<>(propr);
     }
 
@@ -49,21 +49,21 @@ public class Region extends Thread {
             dt = new Date();
             Long key = dt.getTime();
             try {
-                RegionCallback regCallBack = new RegionCallback(dt.getTime(), getWord());
-                RecordMetadata rc = producer.send(new ProducerRecord<>(topic, key, getWord()), regCallBack).get();
+                Step2Callback regCallBack = new Step2Callback(getWord(),dt.getTime());
+                RecordMetadata rc = producer.send(new ProducerRecord<String,Long>(topic, getWord(),key), regCallBack).get();
                 System.out.println("Send Data To Topic Sync:" + rc.offset() + "   Str:" + rc.toString());
 
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Region.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Step2.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ExecutionException ex) {
-                Logger.getLogger(Region.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Step2.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
     public static void main(String[] args) {
-        Region reg = new Region();
+        Step2 reg = new Step2();
         reg.start();
     }
 
@@ -74,12 +74,12 @@ public class Region extends Thread {
 
 }
 
-class RegionCallback implements Callback {
+class Step2Callback implements Callback {
 
     private final Long key;
     private final String message;
 
-    public RegionCallback(long stTime, String msg) {
+    public Step2Callback(String msg,long stTime) {
         this.key = stTime;
         this.message = msg;
     }
