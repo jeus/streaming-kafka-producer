@@ -53,7 +53,7 @@ public class Region extends Thread {
                 RecordMetadata rc = producer.send(new ProducerRecord<>(topic, key, getWord()), regCallBack).get();
                 System.out.println("Send Data To Topic Sync:" + rc.offset() + "   Str:" + rc.toString());
 
-                Thread.sleep(1000);
+                Thread.sleep(10000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Region.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ExecutionException ex) {
