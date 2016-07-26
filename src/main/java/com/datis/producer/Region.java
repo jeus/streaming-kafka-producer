@@ -32,8 +32,9 @@ public class Region extends Thread {
         propr = new Properties();
         propr.put("bootstrap.servers", "172.17.0.13:9092");
         propr.put("client.id", "region");
-//        props.put("batch.size",150);//this for async by size in buffer
-//        props.put("linger.ms", 9000);//this for async by milisecond messages buffered
+        propr.put("buffer.memory", 33554432);
+//        propr.put("batch.size",800);//this for async by size in buffer
+        propr.put("linger.ms",  9000);//this for async by milisecond messages buffered
         propr.put("acks", "1");
         propr.put("key.serializer", "org.apache.kafka.common.serialization.LongSerializer");
         propr.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -50,14 +51,15 @@ public class Region extends Thread {
             Long key = dt.getTime();
             try {
                 RegionCallback regCallBack = new RegionCallback(dt.getTime(), getWord());
-                RecordMetadata rc = producer.send(new ProducerRecord<>(topic, key, getWord()), regCallBack).get();
-                System.out.println("Send Data To Topic Sync:" + rc.offset() + "   Str:" + rc.toString());
+//                RecordMetadata rc =
+                        producer.send(new ProducerRecord<>(topic, key, getWord()), regCallBack);
+//                System.out.println("Send Data To Topic Sync:" + rc.offset() + "   Str:" + rc.toString());
 
-                Thread.sleep(10000);
+                Thread.sleep(3000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Region.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ExecutionException ex) {
-                Logger.getLogger(Region.class.getName()).log(Level.SEVERE, null, ex);
+//            } catch (ExecutionException ex) {
+//                Logger.getLogger(Region.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
